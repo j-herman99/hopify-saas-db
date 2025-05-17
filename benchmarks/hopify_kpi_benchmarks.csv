@@ -1,0 +1,18 @@
+benchmark_id,metric_category,segment,metric_name,target_value,description
+1,Revenue KPIs,Enterprise,NRR % Target,125.0,Enterprise Net Revenue Retention target
+2,Revenue KPIs,Mid-Market,NRR % Target,115.0,Mid-Market Net Revenue Retention target
+3,Revenue KPIs,SMB,NRR % Target,105.0,SMB Net Revenue Retention target
+4,Revenue KPIs,Enterprise,GRR % Target,98.0,Enterprise Gross Revenue Retention target
+5,Revenue KPIs,Mid-Market,GRR % Target,92.0,Mid-Market Gross Revenue Retention target
+6,Revenue KPIs,SMB,GRR % Target,85.0,SMB Gross Revenue Retention target
+7,Customer KPIs,Enterprise,Monthly Churn % Target,1.0,Target monthly churn rate for Enterprise customers
+8,Customer KPIs,Mid-Market,Monthly Churn % Target,2.5,Target monthly churn rate for Mid-Market customers
+9,Customer KPIs,SMB,Monthly Churn % Target,4.5,Target monthly churn rate for SMB customers
+10,Customer KPIs,Enterprise,Monthly New Customers Target,200.0,Target new customer acquisition volume for Enterprise
+11,Customer KPIs,Mid-Market,Monthly New Customers Target,600.0,Target new customer acquisition volume for Mid-Market
+12,Customer KPIs,SMB,Monthly New Customers Target,1200.0,Target new customer acquisition volume for SMB
+13,Revenue KPIs,All Segments,MRR Target,2000000.0,Monthly recurring revenue goal
+14,Support KPIs,All Segments,Avg Resolution Time Target (hrs),48.0,Target average resolution time for support tickets
+15,Support KPIs,All Segments,Support to Churn Correlation %,0.3,Estimated churn correlation from high support volume
+16,Marketing KPIs,All Segments,MQL Conversion Rate %,15.0,Marketing Qualified Lead conversion rate target
+17,Marketing KPIs,All Segments,CAC Target,500.0,Customer Acquisition Cost target (USD)

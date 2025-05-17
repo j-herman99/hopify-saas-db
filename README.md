@@ -1,33 +1,44 @@
 # 🏗️ Hopify SaaS DB Generator
 
+> **Version:** `v1.0`  
+> 🗓️ Released: May 2025
+
 This project generates a realistic, benchmark-aware **SaaS customer lifecycle database** for Hopify — a simulated B2B subscription software platform.
 
-Built entirely in Python using `Faker`, `SQLite`, and dynamic logic, it powers downstream SQL analysis modules across churn, retention, acquisition, and revenue metrics.
+Built in Python using `Faker`, `SQLite`, and scalable logic, this generator produces a clean dataset to support business analysis across churn, retention, revenue, marketing, and customer lifecycle KPIs.
 
 ---
 
 ## 📦 What It Does
 
-- ✅ Generates a **fully normalized SQLite database** (`hopify_v15.db`)
-- ✅ Simulates customers, products, orders, subscriptions, and churn events
-- ✅ Includes **monthly acquisition spikes/dips** to reflect marketing campaigns
-- ✅ Integrates **benchmarks** for key SaaS KPIs (e.g., churn, NRR, LTV)
-- ✅ Supports **multi-year data modeling** with scaling and decay factors
-- ✅ Outputs clean database ready for analysis in SQL, Power BI, or Python
+- ✅ Generates a **fully normalized SQLite database** (`hopify_saas_v1.db`)
+- ✅ Simulates customer acquisition, product subscriptions, support, churn, and retention behavior
+- ✅ Models **monthly acquisition spikes/dips** to reflect campaigns
+- ✅ Embeds **segment-specific benchmarks** for KPI tracking
+- ✅ Supports multi-year simulation with decay logic for churn, revenue, and LTV
 
 ---
 
 ## 📁 Project Structure
 
 hopify-saas-db-generator/
-├── generate_hopify_v15.py # Main Python script to create database
-├── data/
-│ └── hopify_v15.db # Output SQLite database
+├── hopify_db_v1_gen.py ✅ Main generator script
 ├── benchmarks/
-│ └── benchmarks.csv # Target metrics used in SQL analysis
-├── visuals/ # Optional ERDs, flowcharts, etc.
-├── .gitignore
-└── README.md
+│ └── hopify_kpi_benchmarks.csv ✅ Embedded benchmark KPIs
+├── data/
+│ └── hopify_saas_v1.db ✅ SQLite database output
+├── visuals/
+│ ├── hopify_v1_erd.png     ✅ ERD from DBeaver
+│ ├── hopify_cust_lifecycle_flow.png
+│ ├── hopify_cust_lifecycle_flow.svg
+│ └── hopify_benchmark_kpi_matrix.png
+├── python/
+│ ├── hopify_cust_lifecycle_flow_gen.py
+│ └── hopify_benchmark_kpi_matrix_gen.py
+├── README.md
+├── LICENSE
+└── .gitignore
+
 
 ---
 
@@ -35,17 +46,17 @@ hopify-saas-db-generator/
 
 | Feature | Description |
 |--------|-------------|
-| **Segment-aware logic** | Customers are tagged as `SMB`, `Mid-Market`, or `Enterprise` and behave differently |
-| **Churn simulation** | Retention decays differently across segments, mirroring SaaS patterns |
-| **Marketing effects** | Spikes in acquisition and retention driven by pseudo campaign months |
-| **Benchmarks** | A `benchmarks` table aligns SQL KPIs to target metrics for dashboard overlays |
+| **Segment-aware modeling** | Customers are tagged as `SMB`, `Mid-Market`, or `Enterprise` and behave differently |
+| **Retention & churn simulation** | Behavior decays based on segment and time since signup |
+| **Benchmarks table** | KPI targets (e.g., churn %, NRR, ARPU) are embedded for downstream SQL analysis |
+| **Monthly scaling logic** | Each cohort and behavior scales over time and seasonality |
 
 ---
 
 ## 🛠️ Requirements
 
 - Python 3.8+
-- Install dependencies:
+- Dependencies:
 
 ```bash
 pip install faker python-dateutil
@@ -53,30 +64,30 @@ pip install faker python-dateutil
 ---
 
 ## 🚀 Usage
-Run the generator script:
+Run the generator from the project root:
 
 bash
 Copy code
-python generate_hopify_v1.py
+python hopify_db_v1_gen.py
 This creates:
 
-data/hopify_v1.db → A ready-to-query SQLite database
+data/hopify_saas_v1.db → A ready-to-query SQLite database
 
-All schema and table definitions inline with ERD
+Tables: customers, subscriptions, orders, products, churn_events, benchmarks
 
 ---
 
-📎 Related Projects
+## 📎 Related Projects
 📊 Hopify SQL Analysis
 Scenario-based SQL queries for churn, NRR, LTV, CAC, MRR, and benchmark tracking using this dataset.
 
 ---
 
 ## 📄 License
-
-This project is licensed under the Apache License 2.0.  
+This project is licensed under the Apache License 2.0.
 You are free to use, modify, and distribute this project under the terms of the license.
 
-See the [LICENSE](LICENSE) file for full details.
+See the LICENSE file for full details.
 
+---
 

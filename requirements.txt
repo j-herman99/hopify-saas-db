@@ -1,0 +1,6 @@
+faker
+python-dateutil
+pandas
+seaborn
+matplotlib
+graphviz

@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import os
 
-# Load data
+# Load data from csv
 df = pd.read_csv('benchmarks/hopify_kpi_benchmarks.csv')
 
 # Pivot to create matrix
@@ -14,7 +14,7 @@ pivot = df.pivot_table(index='metric_category',
                        aggfunc='count',
                        fill_value=0)
 
-# Custom light blue to purple colormap (no white)
+# Custom light blue to purple colormap
 custom_cmap = mcolors.LinearSegmentedColormap.from_list(
     "BluePurpleGradient", ["#CFE8FF", "#5E9BD4", "#7E57C2"]
 )

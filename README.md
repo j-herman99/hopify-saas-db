@@ -15,11 +15,11 @@ This project powers downstream SaaS analytics by generating a clean, normalized 
 ## 📁 Repository Structure
 
 ```text
-/benchmarks/   → KPI target benchmarks (CSV) with optional SQL import logic
-/data/         → Generated SQLite database file: hopify_saas_v1.db
-/python/       → Python scripts for visualizing flows, matrices, and ERDs
-/visuals/      → Graphical outputs (lifecycle flow, ERD, benchmark matrix)
-/docs/         → (Optional) Dataset schema & ERD documentation
+/benchmarks/   → KPI target benchmarks (CSV) with optional SQL import logic  
+/data/         → Generated SQLite database file: hopify_saas_v1.db  
+/python/       → Python scripts for visualizing flows, matrices, and ERDs  
+/visuals/      → Graphical outputs (lifecycle flow, ERD, benchmark matrix)  
+/docs/         → Developer notes and dataset schema documentation
 
 ```
 ---
@@ -78,8 +78,14 @@ This project powers downstream SaaS analytics by generating a clean, normalized 
 
 ---
 
-## 📄 Dataset Overview
+## 📄 Documentation
 
-For a detailed look at the Hopify SaaS Simulated Database (v1) structure, see:  
-➡️ `docs/hopify_db_dataset_overview.md`
+  - 🗂️ Dataset Overview
+
+  - 🧑‍💻 Developer Notes: hopify_db_gen Section-by-Section Guide
+
+##  🏷️ Tags
+
+#saas #python #sql #data-generation #churn-analysis
+#customer-lifecycle #kpis #sqlite #synthetic-data #business-analysis
 

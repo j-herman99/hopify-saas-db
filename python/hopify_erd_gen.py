@@ -25,7 +25,7 @@ dot.edge("customers", "orders", label="customer_id")
 dot.edge("customers", "churn_events", label="customer_id")
 dot.edge("orders", "products", label="product_id")
 
-# Render as PNG
+# Create PNG and save to visuals
 dot.render("visuals/hopify_v1_erd", format="png", cleanup=True)
 
 print("[INFO] ERD generated: visuals/hopify_v1_erd.png")

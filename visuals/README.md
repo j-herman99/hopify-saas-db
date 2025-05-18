@@ -30,4 +30,4 @@ Each visual can be regenerated using Python scripts in the [`/python/`](../pytho
 
 ---
 
-SVG versions are ideal for embedding in Notion, slide decks, or documentation with responsive scaling.
+* SVG versions are ideal for embedding in Notion, slide decks, or documentation with responsive scaling.

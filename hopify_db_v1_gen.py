@@ -610,59 +610,12 @@ benchmarks = [
     ("Customer KPIs", "SMB", "Retention % Target", 70, "12-month retention target for SMB cohorts")
 ]
 
-# ----------------------------------------
-# 🔁 ALTERNATIVE: Load Benchmarks from CSV
-# ----------------------------------------
-"""
-import csv
-import os
-
-def insert_benchmarks_from_csv(conn, csv_path='benchmarks/kpi_benchmarks_table.csv'):
-    cursor = conn.cursor()
-
-    # Ensure table exists
-    cursor.execute(\"\"\"
-        CREATE TABLE IF NOT EXISTS benchmarks (
-            metric_category TEXT,
-            segment TEXT,
-            metric_name TEXT,
-            target_value REAL,
-            description TEXT
-        );
-    \"\"\")
-
-    try:
-        with open(csv_path, newline='') as csvfile:
-            reader = csv.DictReader(csvfile)
-            for row in reader:
-                cursor.execute(\"\"\"
-                    INSERT INTO benchmarks (metric_category, segment, metric_name, target_value, description)
-                    VALUES (?, ?, ?, ?, ?)
-                \"\"\", (
-                    row['metric_category'],
-                    row['segment'],
-                    row['metric_name'],
-                    float(row['target_value']),
-                    row['description']
-                ))
-        conn.commit()
-        print(f"[INFO] Benchmarks loaded from: {csv_path}")
-    except FileNotFoundError:
-        print(f"[WARNING] CSV file not found: {csv_path} — falling back to hardcoded benchmarks")
-"""
-
-# To use this instead of hardcoded list:
-# insert_benchmarks_from_csv(conn)
-# ----------------------------------------
-
 cursor.executemany("""
     INSERT INTO benchmarks (metric_category, segment, metric_name, target_value, description) 
     VALUES (?, ?, ?, ?, ?)
 """, benchmarks)
 
 print("[INFO] Sample benchmarks (global and segment-specific) inserted.")
-
-
 
 
 # ------------------------------

@@ -1,30 +1,36 @@
-# 🏗️ Hopify SaaS DB Generator  
+# 💻 Hopify SaaS DB Generator  
 
 ---
 
 ![SaaS](https://img.shields.io/badge/SaaS-Simulation-blueviolet)
 ![Python](https://img.shields.io/badge/Python-3.x-blue?logo=python)
 ![SQL](https://img.shields.io/badge/SQL-SQLite-lightgrey?logo=sqlite)
-![Churn Analysis](https://img.shields.io/badge/Churn-Analysis-orange)
-![Business Analysis](https://img.shields.io/badge/Business-Analysis-brightgreen)
-
+![Data Generation](https://img.shields.io/badge/Data-Synthetic-green)
+![Customer Lifecycle](https://img.shields.io/badge/Customer-Lifecycle-orange)
 
 ---
 
 **Version:** `v1.0`  
 📅 Released: May 2025
 
-A Python-based generator that creates a realistic, benchmark-aware **B2B SaaS customer lifecycle database** for Hopify. Simulates acquisition, subscriptions, churn, and KPIs across `SMB`, `Mid-Market`, and `Enterprise` segments for SQL-based scenario analysis.
+
+A Python-based generator that creates a realistic, benchmark-aware **B2B SaaS customer lifecycle database** for Hopify. It simulates acquisition, subscriptions, churn, and segment behavior across `SMB`, `Mid-Market`, and `Enterprise` tiers, producing a normalized SQLite database for downstream analysis.
 
 ---
 
 ## 🧠 Overview
 
-This project powers downstream SaaS analytics by generating a clean, normalized SQLite database (`hopify_saas_v1.db`) using synthetic but segment-aware customer behavior. Built entirely in Python with optional visuals and benchmark targeting.
+---
+
+This repository generates a clean, multi-year, segment-aware **SQLite database** (`hopify_saas_v1.db`) that serves as the foundation for SaaS KPI modeling, churn analysis, and revenue forecasting. The dataset is fully synthetic and reflects real-world B2B customer behavior.
+
+It is designed for use by **data analysts, business students, and product teams** looking to practice SQL, Python, cohort modeling, and SaaS metrics in a realistic simulation environment. Built entirely in Python with optional visuals and benchmark targeting, it enables faster prototyping and hands-on exploration of customer lifecycle analytics.
 
 ---
 
 ## 📁 Repository Structure
+
+---
 
 ```text
 /benchmarks/   → KPI target benchmarks (CSV) with optional SQL import logic  
@@ -34,67 +40,37 @@ This project powers downstream SaaS analytics by generating a clean, normalized 
 /docs/         → Developer notes and dataset schema documentation
 
 ```
+
 ---
 
 ## 🔧 Features & Simulation Logic
 
+---
+
+
 | ✅ Module                    | Description                                                                |
 |-----------------------------|-----------------------------------------------------------------------------|
 | Segment-aware simulation    | Customers behave differently by segment: SMB, Mid-Market, Enterprise        |
-| Multi-year cohort modeling  | Acquisition, churn, and retention behaviors evolve monthly                  |
-| Churn & retention decay     | Dynamic decay curves by segment simulate SaaS behavior                      |
-| Benchmarks table            | Optional hardcoded or CSV-driven benchmarks for KPI tracking                |
-| Visual generation           | Lifecycle flow, ERD, and KPI matrix auto-generated for storytelling         |
+| Multi-year cohort modeling  | Customer acquisition trends evolve month-to-month over a 3-year period      |
+| Churn & retention decay     | Churn risk decreases with tenure and varies by support history              |
+| Benchmarks table            | Includes optional KPI targets for analysis alignment                        |
+| ERD + visual generation     | Outputs ERD diagrams and flow visuals for documentation and storytelling    |
 
----
-
----
-
-## 🔍 Key Analyses & Deliverables
-
-### 📈 Analysis Modules
-- Churn Rate Analysis by Segment  
-- Retention Curve & Cohort Heatmaps  
-- NRR / GRR Revenue Impact Analysis  
-- ARPU Trends & Segment Profitability  
-- LTV Estimation by Segment  
-- Support Ticket Volume vs. Churn  
-- Acquisition & Marketing Funnel Trends  
-
----
-
-## 📊 Sample Visuals
-
-| Visual Title              | Description                          |
-|---------------------------|--------------------------------------|
-| Churn Rate by Segment     | Monthly churn breakdown by segment   |
-| Cohort Retention Heatmap  | Visual decay curve by signup cohort  |
-
----
-
-## 📝 Reports & Insights
-
-- Cohort Retention Executive Summary  
-- Revenue Growth & NRR Report  
-- LTV & Profitability Findings  
-- Segment-Level Performance Reviews  
-
----
-
-## ✅ What This Demonstrates
-
-- Translating SaaS business questions into KPI-driven analysis  
-- Strong SQL + Python applied to real-world metrics  
-- Effective data storytelling & executive reporting  
-- Practical RevOps, FP&A, and Business Analysis skill showcase  
 
 ---
 
 ## 📄 Documentation
 
-  - 🗂️ Dataset Overview
+---
 
-  - 🧑‍💻 Developer Notes: hopify_db_gen Section-by-Section Guide
+This project includes full documentation for both the database structure and the script logic behind it:
+
+- 🗂️ [Dataset Overview](docs/hopify_db_dataset_overview.md)  
+  Explains the schema design, table relationships, and key fields within `hopify_saas_v1.db`.
+
+- 🧑‍💻 [Developer Notes: hopify_db_gen Section-by-Section Guide](docs/hopify_db_gen_section_notes.md)  
+  Provides line-by-line commentary on the Python generation script, including logic, structure, and business reasoning.
+
 
 ---
 

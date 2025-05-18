@@ -11,9 +11,7 @@ This folder contains Python scripts that generate structural and analytical visu
 |--------------------------------------|-------------------------------------------------------------|
 | `hopify_cust_lifecycle_flow_gen.py`  | Customer lifecycle flowchart (Graphviz PNG/SVG)            |
 | `hopify_benchmark_kpi_matrix_gen.py` | Heatmap of benchmark KPI coverage (Matplotlib PNG)         |
-| `hopify_erd_generator.py`            | Full ERD with all 15 entities (export as PNG or SVG)       |
-
-> For the ERD generator, set the output format (`svg` or `png`) at the top of the script.
+| `hopify_generate_erd_svg.py`         | Full ERD with all 15 entities rendered as SVG              |
 
 ---
 

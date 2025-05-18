@@ -47,14 +47,11 @@ It is designed for use by **data analysts, business students, and product teams*
 
 ---
 
+The following visuals illustrate the structural logic of this data generator:
 
-The following visuals support the design and logic of this database generator:
-
-| Visual | Description |
-|--------|-------------|
-| ![ERD](visuals/hopify_v1_erd.png) | Entity-Relationship Diagram of the `hopify_saas_v1.db` structure |
-| ![Lifecycle Flow](visuals/hopify_cust_lifecycle_flow.png) | Modeled SaaS customer lifecycle: signup ➝ usage ➝ churn |
-| ![KPI Matrix](visuals/hopify_benchmark_kpi_matrix.png) | Visual matrix of benchmark KPIs used in the `benchmarks` table |
+- 🗺️ [ERD Diagram](visuals/hopify_v1_erd.png): Full schema of `hopify_saas_v1.db`
+- 🔄 [Lifecycle Flowchart](visuals/hopify_cust_lifecycle_flow.png): Simulated customer journey from signup to churn
+- 🎯 [Benchmark KPI Matrix](visuals/hopify_benchmark_kpi_matrix.png): Target values used in the `benchmarks` table
 
 
 ---

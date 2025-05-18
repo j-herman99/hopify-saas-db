@@ -1,6 +1,7 @@
 from faker import Faker
 import sqlite3
 import random
+import os
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 
@@ -64,8 +65,11 @@ print(f"[INFO] Acquisition plan generated for {len(acquisition_plan)} months.")
 # ------------------------------
 # Connect and Create Schema
 # ------------------------------
-conn = sqlite3.connect("/Users/jade.herman/Documents/00_github/hopify-saas-kpi-analysis/hopify_saas_v1.db")
+
+db_path = os.path.join(os.path.dirname(__file__), '..', 'data', 'hopify_saas_v1.db')
+conn = sqlite3.connect(os.path.abspath(db_path))
 cursor = conn.cursor()
+
 
 cursor.executescript("""
 DROP TABLE IF EXISTS customers;

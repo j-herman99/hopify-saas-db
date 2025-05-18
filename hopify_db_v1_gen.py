@@ -1,9 +1,14 @@
-from faker import Faker
+# Standard library
+import os
 import sqlite3
 import random
-import os
 from datetime import datetime, timedelta
-from dateutil.relativedelta import relativedelta
+from collections import defaultdict
+
+# Third-party libraries
+from faker import Faker
+from dateutil.relativedelta im
+
 
 fake = Faker()
 
@@ -40,7 +45,6 @@ print("[INFO] Database structure and constants initialized.")
 # ------------------------------
 # Dynamic Monthly Acquisition Plan (with dips, spikes, and marketing campaigns)
 # ------------------------------
-from collections import defaultdict
 
 acquisition_plan = defaultdict(int)
 start_month = datetime.now() - relativedelta(months=36)  # Extend to 3 years for v15

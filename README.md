@@ -93,9 +93,9 @@ This project includes full documentation for both the database structure and the
 
 Looking for the analysis side of this project?
 
-👉 Check out the companion repository:  
-**[Hopify SaaS KPI Analysis](https://github.com/jherman9987/hopify-saas-kpi-analysis)**  
-Includes SQL queries, cohort analysis, KPI benchmarking, retention heatmaps, and Python-powered insights built on the database from this repo.
+👉 Check out the companion repository:  **[Hopify SaaS KPI Analysis](https://github.com/jherman9987/hopify-saas-kpi-analysis)**  
+
+  Includes SQL queries, cohort analysis, KPI benchmarking, retention heatmaps, and Python-powered insights built on the database from this repo.
 
 
 ---

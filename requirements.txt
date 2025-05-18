@@ -1,7 +1,10 @@
 faker
-python-dateutil
-pandas
-seaborn
-matplotlib
+collections
+datetime
+dateutil
+faker
 graphviz
+matplotlib
 os
+random
+sqlite3

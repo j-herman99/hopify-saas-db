@@ -1,4 +1,4 @@
-# 📊 Benchmarks
+### 📊 Benchmarks
 
 This folder contains the `hopify_kpi_benchmarks.csv` file used for managing KPI targets in the Hopify v1 database.
 
@@ -56,3 +56,5 @@ def insert_benchmarks_from_csv(conn, csv_path='benchmarks/hopify_kpi_benchmarks.
         print(f"[INFO] Benchmarks loaded from: {csv_path}")
     except FileNotFoundError:
         print(f"[WARNING] CSV file not found: {csv_path} — falling back to hardcoded benchmarks")
+
+---

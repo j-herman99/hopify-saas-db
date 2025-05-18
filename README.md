@@ -1,6 +1,5 @@
 # 💻 Hopify SaaS DB Generator  
 
----
 
 ![SaaS](https://img.shields.io/badge/SaaS-Simulation-blueviolet)
 ![Python](https://img.shields.io/badge/Python-3.x-blue?logo=python)
@@ -8,7 +7,6 @@
 ![Data Generation](https://img.shields.io/badge/Data-Synthetic-green)
 ![Customer Lifecycle](https://img.shields.io/badge/Customer-Lifecycle-orange)
 
----
 
 **Version:** `v1.0`  
 📅 Released: May 2025
@@ -20,17 +18,18 @@ A Python-based generator that creates a realistic, benchmark-aware **B2B SaaS cu
 
 ## 🧠 Overview
 
----
+
 
 This repository generates a clean, multi-year, segment-aware **SQLite database** (`hopify_saas_v1.db`) that serves as the foundation for SaaS KPI modeling, churn analysis, and revenue forecasting. The dataset is fully synthetic and reflects real-world B2B customer behavior.
 
 It is designed for use by **data analysts, business students, and product teams** looking to practice SQL, Python, cohort modeling, and SaaS metrics in a realistic simulation environment. Built entirely in Python with optional visuals and benchmark targeting, it enables faster prototyping and hands-on exploration of customer lifecycle analytics.
 
+
 ---
 
 ## 📁 Repository Structure
 
----
+
 
 ```text
 /benchmarks/   → KPI target benchmarks (CSV) with optional SQL import logic  
@@ -41,11 +40,11 @@ It is designed for use by **data analysts, business students, and product teams*
 
 ```
 
+
 ---
 
 ## 📊 Project Architecture Diagrams
 
----
 
 The following visuals illustrate the structural logic of this data generator:
 
@@ -58,7 +57,6 @@ The following visuals illustrate the structural logic of this data generator:
 
 ## 🔧 Features & Simulation Logic
 
----
 
 
 | ✅ Module                    | Description                                                                |
@@ -72,9 +70,9 @@ The following visuals illustrate the structural logic of this data generator:
 
 ---
 
+
 ## 📄 Documentation
 
----
 
 This project includes full documentation for both the database structure and the script logic behind it:
 

@@ -1,4 +1,16 @@
 # 🏗️ Hopify SaaS DB Generator  
+
+---
+
+![SaaS](https://img.shields.io/badge/SaaS-Simulation-blueviolet)
+![Python](https://img.shields.io/badge/Python-3.x-blue?logo=python)
+![SQL](https://img.shields.io/badge/SQL-SQLite-lightgrey?logo=sqlite)
+![Churn Analysis](https://img.shields.io/badge/Churn-Analysis-orange)
+![Business Analysis](https://img.shields.io/badge/Business-Analysis-brightgreen)
+
+
+---
+
 **Version:** `v1.0`  
 📅 Released: May 2025
 
@@ -84,8 +96,6 @@ This project powers downstream SaaS analytics by generating a clean, normalized 
 
   - 🧑‍💻 Developer Notes: hopify_db_gen Section-by-Section Guide
 
-##  🏷️ Tags
+---
 
-#saas #python #sql #data-generation #churn-analysis
-#customer-lifecycle #kpis #sqlite #synthetic-data #business-analysis
 

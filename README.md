@@ -7,7 +7,7 @@
 ![Customer Lifecycle](https://img.shields.io/badge/Customer-Lifecycle-orange)
 
 **Version:** `v1.0`  
-📅 Released: May 2025
+📅 Released: June 2025
 
 A Python-based generator that creates a realistic, benchmark-aware **B2B SaaS customer lifecycle database** for Hopify. It simulates acquisition, subscriptions, churn, and segment behavior across `SMB`, `Mid-Market`, and `Enterprise` tiers, producing a normalized SQLite database for downstream analysis.
 

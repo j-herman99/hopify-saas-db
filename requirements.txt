@@ -1,10 +1,2 @@
 faker
-collections
-datetime
-dateutil
-faker
-graphviz
-matplotlib
-os
-random
-sqlite3
+python-dateutil

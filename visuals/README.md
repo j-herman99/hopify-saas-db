@@ -1,35 +1,21 @@
-# 🎨 Visuals
+# 🧩 Visuals Folder
 
-This folder contains graphical outputs used for documentation, presentations, and data storytelling throughout the Hopify v1 project.
+This folder contains the ERD (Entity Relationship Diagram) visualizations for the `hopify_saas_v1.db` database. These diagrams are useful for understanding table relationships, schema structure, and data flow.
 
-Visuals represent the simulated SaaS environment, including the database schema, customer lifecycle flow, and benchmark KPI matrix.
+### 📄 Files Included
 
----
+- `hopify_v1_erd_dbeaver.png`  
+  Clean layout of all tables and foreign key relationships rendered using DBeaver.
 
-## 📁 Visual Descriptions
+- `hopify_v1_erd_dbeaver.pdf`  
+  Print-ready version of the same schema diagram suitable for documentation or slide decks.
 
-| File | Format(s) | Purpose |
-|------|-----------|---------|
-| `hopify_v1_erd.(pdf/png/svg)` | PDF, PNG, SVG | Entity-Relationship Diagram showing all 15 tables and foreign key relationships. SVG generated via Python; PDF/PNG exported from DBeaver. |
-| `hopify_cust_lifecycle_flow.(png/svg)` | PNG, SVG | Visualizes the Hopify customer journey from acquisition to churn or retention. Built with Graphviz for integration into presentations and documentation. |
-| `hopify_benchmark_kpi_matrix.png` | PNG | Heatmap of benchmark KPI coverage by segment and category. Useful for identifying analytical gaps and prioritizing metrics.
+### 📌 Usage
 
----
+These ERDs can be used to:
 
-## ⚙️ How to Regenerate Visuals
+- Understand core entity relationships and join paths
+- Support SQL query design for churn, cohort, or KPI analysis
+- Communicate database logic in presentations or documentation
 
-Visuals are generated using scripts located in the [`/python/`](../python/) folder:
-
-| Script | Output |
-|--------|--------|
-| `hopify_generate_erd_svg.py` | Full ERD as SVG using Graphviz (includes all 15 tables) |
-| `hopify_cust_lifecycle_flow_gen.py` | Customer lifecycle flowchart (SVG/PNG) |
-| `hopify_benchmark_kpi_matrix_gen.py` | Benchmark matrix heatmap (PNG)
-
-> The ERD can also be generated visually using DBeaver (export as PDF/PNG), or code-only via `hopify_generate_erd_svg.py`.
-
----
-
-**Tip:** SVGs are ideal for embedding in Notion, slide decks, or responsive documentation due to their scalability and clarity.
-
----
+> ℹ️ All visuals reflect the latest version of the schema (v15) used in the Hopify DB Generator.

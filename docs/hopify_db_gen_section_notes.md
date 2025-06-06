@@ -1,7 +1,6 @@
-
 # 🧪 Hopify DB Generator – Section Purpose & Role Notes
 
-This README documents each major section of the `hopify_db_v1_gen.py` script, explaining its role in building a realistic, segment-aware SaaS dataset for analysis.
+This document, located in the `/docs/` folder, outlines each major section of the `hopify_db_v1_gen.py` script, explaining its role in building a realistic, segment-aware SaaS dataset for analysis.
 
 ---
 
@@ -158,10 +157,11 @@ Generates monthly traffic volume per channel:
 
 ## 🎯 Benchmarks
 
-Inserts SaaS KPI targets for benchmarking:
+Loads KPI benchmark values from a CSV file:
 
 - Includes Revenue, Customer, Support, and Marketing metrics
-- Enables comparisons of actual vs. target across segments
+- Fields include `segment`, `metric_name`, `target_value`, and `target_period` (monthly, annual, or lifetime)
+- Enables comparisons of actual vs. target across segments using predefined targets for each KPI and time period
 - Enhances executive reporting and dashboards
 
 ---
@@ -172,6 +172,6 @@ Commits and closes the SQLite connection:
 
 - Ensures all data is written to disk
 - Prints success summary of dataset scope
-- Marks completion of full Hopify v15 database generation
+- Marks successful completion of the Hopify v15 database generation process
 
 ---

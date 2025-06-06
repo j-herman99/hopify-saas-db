@@ -1,16 +1,21 @@
+
 # Standard library
 import os
 import sqlite3
 import random
+import csv
+import re
 from datetime import datetime, timedelta
 from collections import defaultdict
 
 # Third-party libraries
 from faker import Faker
-from dateutil.relativedelta im
+from dateutil.relativedelta import relativedelta
 
-
+random.seed(42)
 fake = Faker()
+fake.seed_instance(42)
+
 
 # ------------------------------
 # Constants and Lookups
@@ -41,6 +46,31 @@ OFFICE_LOCATIONS = [
 ]
 
 print("[INFO] Database structure and constants initialized.")
+
+# ------------------------------
+# B2B Name & Domain Helpers
+# ------------------------------
+def generate_customer_name(segment):
+    if segment == "SMB":
+        return fake.name()
+    elif segment == "Mid-Market":
+        return random.choice([
+            f"{fake.first_name()}'s {random.choice(['Studio', 'Shop', 'Solutions'])}",
+            fake.company()
+        ])
+    elif segment == "Enterprise":
+        return f"{fake.company()} {random.choice(['Inc.', 'LLC', 'Group', 'Solutions', 'Systems'])}"
+
+def slugify(text):
+    text = text.lower()
+    text = re.sub(r"[^\w\s-]", "", text)
+    text = re.sub(r"[\s_-]+", "-", text)
+    return text.strip("-")
+
+def generate_store_metadata(name):
+    slug = slugify(name)
+    domain = f"{slug}.hopify.com"
+    return slug, domain
 
 # ------------------------------
 # Dynamic Monthly Acquisition Plan (with dips, spikes, and marketing campaigns)
@@ -100,7 +130,9 @@ CREATE TABLE customers (
     shipping_address TEXT,
     signup_date TEXT,
     customer_segment TEXT,
-    acquisition_source TEXT
+    acquisition_source TEXT,
+    store_slug TEXT,
+    store_domain TEXT
 );
 
 CREATE TABLE subscriptions (
@@ -142,6 +174,12 @@ CREATE TABLE payments (
     success INTEGER,
     FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
 );
+
+CREATE TABLE marketing_spend (
+    segment TEXT,
+    month TEXT,
+    monthly_budget REAL
+);                     
 
 CREATE TABLE churn_events (
     churn_id INTEGER PRIMARY KEY,
@@ -203,16 +241,6 @@ CREATE TABLE locations (
     country TEXT
 );
 
-CREATE TABLE marketing_campaigns (
-    campaign_id INTEGER PRIMARY KEY,
-    campaign_name TEXT NOT NULL,
-    channel TEXT NOT NULL,
-    campaign_type TEXT,
-    start_date TEXT,
-    end_date TEXT,
-    total_cost REAL
-);
-
 CREATE TABLE web_traffic (
     traffic_id INTEGER PRIMARY KEY AUTOINCREMENT,
     traffic_date TEXT,
@@ -223,13 +251,15 @@ CREATE TABLE web_traffic (
 );
 
 CREATE TABLE benchmarks (
-    benchmark_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    benchmark_id TEXT PRIMARY KEY,
     metric_category TEXT NOT NULL,
     segment TEXT NOT NULL,
     metric_name TEXT NOT NULL,
     target_value REAL,
-    description TEXT
+    description TEXT,
+    target_period TEXT
 );
+
 """)
 
 print("[INFO] Database schema created.")
@@ -281,155 +311,234 @@ for i, (name, address, city, state, postal_code, country) in enumerate(OFFICE_LO
 print("[INFO] Inserted office locations.")
 
 # ------------------------------
-# Customers Based on Plan (with segment distribution and logging)
+# Customer Generation
 # ------------------------------
 customer_id = 1
-customers_list = []
+customer_list = []
+batch_data = []
+batch_size = 1000
 
 for year_month, target in acquisition_plan.items():
     month_start = datetime.strptime(year_month + "-01", "%Y-%m-%d")
     month_end = month_start + relativedelta(months=1) - timedelta(days=1)
 
-    if month_start.month in [6, 7, 8]:
-        source = "Summer Dip - Organic"
-    elif month_start.month in [11, 12, 1]:
-        source = "Holiday Season Spike - Campaign"
-    elif month_start.month == 4 and random.random() < 0.3:
-        source = "Spring Marketing Campaign"
-    else:
-        source = "Organic Growth"
-
     for _ in range(target):
         signup_date = fake.date_time_between_dates(month_start, month_end)
         segment = random.choices(CUSTOMER_SEGMENTS, weights=[0.6, 0.3, 0.1])[0]
 
-        cursor.execute("""
-            INSERT INTO customers VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        """, (
+        # Segment-aware acquisition channel
+        if segment == "SMB":
+            source = random.choices(
+                ["Organic", "Social", "Paid Search", "Referral", "Direct"],
+                weights=[0.45, 0.25, 0.20, 0.05, 0.05]
+            )[0]
+        elif segment == "Mid-Market":
+            source = random.choices(
+                ["Paid Search", "Referral", "Organic", "Social", "Direct"],
+                weights=[0.30, 0.25, 0.20, 0.15, 0.10]
+            )[0]
+        else:  # Enterprise
+            source = random.choices(
+                ["Referral", "Paid Search", "Direct", "Organic", "Social"],
+                weights=[0.35, 0.30, 0.20, 0.10, 0.05]
+            )[0]
+
+        # Generate B2B-style name and domain
+        name = generate_customer_name(segment)
+        slug, domain = generate_store_metadata(name)
+
+        batch_data.append((
             customer_id,
-            fake.name(),
+            name,
             fake.email(),
             fake.address(),
             fake.address(),
             signup_date.strftime("%Y-%m-%d %H:%M:%S"),
             segment,
-            source
+            source,
+            slug,
+            domain
         ))
-        customers_list.append((customer_id, segment))
+
+        customer_list.append((customer_id, segment))
         customer_id += 1
 
-print(f"[INFO] Inserted {len(customers_list)} customers.")
+        if len(batch_data) >= batch_size:
+            cursor.executemany("INSERT INTO customers VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", batch_data)
+            conn.commit()
+            batch_data = []
+
+if batch_data:
+    cursor.executemany("INSERT INTO customers VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", batch_data)
+    conn.commit()
+
+print(f"[INFO] Inserted {len(customer_list)} customers.")
 
 # ------------------------------
-# Subscriptions with History (Segment-aware)
-# ------------------------------
-sub_id = 1
-for cust_id, segment in customers_list:
-    start = fake.date_time_between(start_date='-2y', end_date='-180d')
-    if segment == 'SMB':
-        plan_sequence = random.choices([("Starter", 29), ("Basic", 79), ("Hopify Standard", 299)], weights=[0.7, 0.25, 0.05], k=random.randint(1, 2))
-    elif segment == 'Mid-Market':
-        plan_sequence = random.choices([("Basic", 79), ("Hopify Standard", 299), ("Advanced", 399)], weights=[0.15, 0.5, 0.35], k=random.randint(1, 3))
-    else:
-        plan_sequence = random.choices([("Hopify Standard", 299), ("Advanced", 399), ("Plus", 2000)], weights=[0.1, 0.4, 0.5], k=random.randint(2, 4))
-
-    for idx, (plan, price) in enumerate(plan_sequence):
-        change_type = "signup" if idx == 0 else random.choice(["upgrade", "reactivation", "upgrade"])
-        end = None
-        if idx < len(plan_sequence) - 1:
-            end = start + timedelta(days=random.randint(60, 180))
-            status = "cancelled"
-        else:
-            if random.random() < (0.2 if segment == 'SMB' else 0.1 if segment == 'Mid-Market' else 0.05):
-                end = start + timedelta(days=random.randint(60, 300))
-                status = "cancelled"
-            else:
-                status = "active"
-
-        cursor.execute("""
-            INSERT INTO subscriptions VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        """, (
-            sub_id, cust_id, plan, price,
-            start.strftime("%Y-%m-%d %H:%M:%S"),
-            end.strftime("%Y-%m-%d %H:%M:%S") if end else None,
-            status,
-            change_type
-        ))
-
-        start = end if end else start
-        sub_id += 1
-
-print("[INFO] Inserted subscriptions with historical changes.")
-
-# ------------------------------
-# Orders, Order Items, Payments (Segment-aware with skew)
+# Orders, Order Items, Payments
 # ------------------------------
 order_id = 1
 item_id = 1
 payment_id = 1
-for cust_id, segment in customers_list:
-    if segment == 'Enterprise':
-        num_orders = random.randint(3, 6)
-    elif segment == 'Mid-Market':
-        num_orders = random.randint(2, 4)
-    else:
-        num_orders = random.randint(1, 3)
+
+for customer_id, segment in customer_list:
+    num_orders = random.randint(1, 3) if segment == 'SMB' else random.randint(2, 4) if segment == 'Mid-Market' else random.randint(3, 6)
 
     for _ in range(num_orders):
         order_date = fake.date_time_between(start_date='-2y', end_date=datetime.today())
-        total = 0
+        total = 0.0
 
         cursor.execute("INSERT INTO orders VALUES (?, ?, ?, ?)", (
-            order_id, cust_id, order_date.strftime("%Y-%m-%d %H:%M:%S"), 0.0
+            order_id, customer_id, order_date.strftime("%Y-%m-%d %H:%M:%S"), 0.0
         ))
 
+        # Segment-based category preferences
         if segment == 'Enterprise':
-            preferred_categories = ['POS Hardware & Software', 'Payments & Finance', 'Financial Services', 'Apps & Integrations']
+            categories = ['POS Hardware & Software', 'Payments & Finance', 'Financial Services', 'Apps & Integrations']
             weights = [0.4, 0.3, 0.2, 0.1]
         elif segment == 'Mid-Market':
-            preferred_categories = ['Apps & Integrations', 'Storefront Tools', 'Marketing & Growth']
+            categories = ['Apps & Integrations', 'Storefront Tools', 'Marketing & Growth']
             weights = [0.4, 0.4, 0.2]
         else:
-            preferred_categories = ['Storefront Tools', 'Marketing & Growth', 'Logistics & Shipping']
+            categories = ['Storefront Tools', 'Marketing & Growth', 'Logistics & Shipping']
             weights = [0.5, 0.3, 0.2]
 
         for _ in range(random.randint(1, 5)):
-            category = random.choices(preferred_categories, weights=weights)[0]
+            category = random.choices(categories, weights=weights)[0]
             cursor.execute("SELECT product_id, price FROM products WHERE category = ? ORDER BY RANDOM() LIMIT 1", (category,))
             result = cursor.fetchone()
             if result:
                 pid, price = result
                 qty = random.randint(1, 3)
-                subtotal = round(price * qty, 2) if price else 0
+                subtotal = round(price * qty, 2)
                 total += subtotal
-
-                cursor.execute("INSERT INTO order_items VALUES (?, ?, ?, ?, ?)", (
-                    item_id, order_id, pid, qty, subtotal
-                ))
+                cursor.execute("INSERT INTO order_items VALUES (?, ?, ?, ?, ?)", (item_id, order_id, pid, qty, subtotal))
                 item_id += 1
 
+        # Update total
         cursor.execute("UPDATE orders SET total_amount = ? WHERE order_id = ?", (round(total, 2), order_id))
 
+        # Payment
         pay_date = fake.date_time_between(start_date=order_date, end_date=datetime.today())
         method = random.choice(PAYMENT_METHODS)
         success = 1 if random.random() > 0.03 else 0
         cursor.execute("INSERT INTO payments VALUES (?, ?, ?, ?, ?, ?)", (
-            payment_id, cust_id, round(total, 2), pay_date.strftime("%Y-%m-%d %H:%M:%S"), method, success
+            payment_id, customer_id, round(total, 2), pay_date.strftime("%Y-%m-%d %H:%M:%S"), method, success
         ))
-        payment_id += 1
 
         order_id += 1
+        payment_id += 1
 
-print("[INFO] Inserted orders, order items, and payments.")
+print("[INFO] Inserted base orders, items, and payments.")
+
+# ------------------------------
+# Expansion Revenue Events
+# ------------------------------
+segment_expansion_params = {
+    "SMB": {"rate": 0.03, "factor_range": (0.05, 0.1)},
+    "Mid-Market": {"rate": 0.1, "factor_range": (0.08, 0.15)},
+    "Enterprise": {"rate": 0.15, "factor_range": (0.1, 0.2)}
+}
+
+exp_order_id = 900000
+exp_payment_id = 900000
+expansion_count = 0
+
+for customer_id, segment in customer_list:
+    params = segment_expansion_params[segment]
+    if random.random() < params["rate"]:
+        # Select a random base order date
+        cursor.execute("SELECT order_date FROM orders WHERE customer_id = ? ORDER BY RANDOM() LIMIT 1", (customer_id,))
+        result = cursor.fetchone()
+        if not result:
+            continue
+        base_date = datetime.strptime(result[0], "%Y-%m-%d %H:%M:%S")
+
+        # Generate 1–4 monthly expansions
+        months = random.randint(1, 4)
+        for i in range(months):
+            expansion_date = base_date + relativedelta(months=i+1)
+            factor = random.uniform(*params["factor_range"])
+            revenue = round(random.uniform(100, 1000) * factor, 2)
+
+            cursor.execute("INSERT INTO orders VALUES (?, ?, ?, ?)", (
+                exp_order_id, customer_id, expansion_date.strftime("%Y-%m-%d %H:%M:%S"), revenue
+            ))
+            cursor.execute("INSERT INTO payments VALUES (?, ?, ?, ?, ?, ?)", (
+                exp_payment_id, customer_id, revenue, expansion_date.strftime("%Y-%m-%d %H:%M:%S"), "Card", 1
+            ))
+
+            exp_order_id += 1
+            exp_payment_id += 1
+            expansion_count += 1
+
+print(f"[INFO] Simulated {expansion_count} expansion revenue events.")
+
+# ------------------------------
+# Subscriptions with Signups and Upgrades
+# ------------------------------
+
+cursor.execute("SELECT MAX(subscription_id) FROM subscriptions")
+existing_sub_id = cursor.fetchone()[0]
+sub_id = existing_sub_id + 1 if existing_sub_id is not None else 1
+
+subscription_data = []
+
+for customer_id, segment in customer_list:
+    cursor.execute("SELECT signup_date FROM customers WHERE customer_id = ?", (customer_id,))
+    signup_date_str = cursor.fetchone()[0]
+    signup_date = datetime.strptime(signup_date_str, "%Y-%m-%d %H:%M:%S")
+    
+    start_date = fake.date_time_between(start_date=signup_date, end_date=signup_date + relativedelta(months=3))
+    duration_months = random.randint(6, 24)
+    end_date = start_date + relativedelta(months=duration_months)
+
+    if segment == 'Enterprise':
+        plan_type = random.choice(['Pro', 'Enterprise'])
+        price = round(random.uniform(300, 800), 2)
+    elif segment == 'Mid-Market':
+        plan_type = random.choice(['Standard', 'Pro'])
+        price = round(random.uniform(100, 300), 2)
+    else:
+        plan_type = random.choice(['Starter', 'Standard'])
+        price = round(random.uniform(30, 100), 2)
+
+    # Insert initial signup subscription
+    subscription_data.append((
+        sub_id, customer_id, plan_type, price,
+        start_date.strftime("%Y-%m-%d %H:%M:%S"),
+        end_date.strftime("%Y-%m-%d %H:%M:%S"),
+        'active', 'signup'
+    ))
+    sub_id += 1
+
+    # Simulate upgrades
+    upgrade_chance = {"SMB": 0.1, "Mid-Market": 0.2, "Enterprise": 0.3}
+    if random.random() < upgrade_chance[segment]:
+        upgrade_date = start_date + timedelta(days=random.randint(90, 365))
+        if upgrade_date < datetime.today():
+            upgrade_price = round(price * random.uniform(1.2, 1.6), 2)
+            subscription_data.append((
+                sub_id, customer_id, plan_type, upgrade_price,
+                upgrade_date.strftime("%Y-%m-%d %H:%M:%S"),
+                None, 'active', 'upgrade'
+            ))
+            sub_id += 1
+
+cursor.executemany("INSERT INTO subscriptions VALUES (?, ?, ?, ?, ?, ?, ?, ?)", subscription_data)
+conn.commit()
+
+print(f"[INFO] Inserted {len(subscription_data)} subscriptions including signups and upgrades.")
+
 
 # ------------------------------
 # Support Tickets (Segment-Aware with defensive handling)
 # ------------------------------
 ticket_id = 1
-sample_size = min(20000, len(customers_list))
-sampled_customers = random.sample(customers_list, sample_size)
+sample_size = min(20000, len(customer_list))
+sampled_customers = random.sample(customer_list, sample_size)
 
-for cust_id, segment in sampled_customers:
+for customer_id, segment in sampled_customers:
     if segment == 'Enterprise':
         num_tickets = random.choices([5, 6, 7, 8, 9, 10], weights=[20, 30, 25, 15, 7, 3])[0]
         resolution_range = (6, 36)
@@ -454,7 +563,7 @@ for cust_id, segment in sampled_customers:
             INSERT INTO support_tickets VALUES (?, ?, ?, ?, ?)
         """, (
             ticket_id,
-            cust_id,
+            customer_id,
             category,
             created.strftime("%Y-%m-%d %H:%M:%S"),
             resolved.strftime("%Y-%m-%d %H:%M:%S")
@@ -467,6 +576,7 @@ print("[INFO] Inserted support tickets.")
 # ------------------------------
 # Churn Events (Segment-aware with support friction and decay adjustments)
 # ------------------------------
+churn_id = 1
 cursor.execute("""
     SELECT 
         c.customer_id,
@@ -482,13 +592,16 @@ cursor.execute("""
     GROUP BY c.customer_id
 """)
 
-churn_id = 1
-for row in cursor.fetchall():
-    cust_id, segment, signup_date_str, total_tickets, first_ticket_date, avg_resolution_days, billing_tickets = row
-    signup_date = datetime.strptime(signup_date_str, "%Y-%m-%d %H:%M:%S")
+churn_candidates = 0
+churn_inserted = 0
 
-    churn_prob = 0.05 if segment == 'Enterprise' else 0.15 if segment == 'Mid-Market' else 0.4
+for row in cursor.fetchall():
+    customer_id, segment, signup_date_str, total_tickets, first_ticket_date, avg_resolution_days, billing_tickets = row
+    signup_date = datetime.strptime(signup_date_str, "%Y-%m-%d %H:%M:%S")
     days_since_signup = (datetime.today() - signup_date).days
+
+    churn_prob = 0.02 if segment == 'Enterprise' else 0.05 if segment == 'Mid-Market' else 0.12
+
     if days_since_signup < 90:
         churn_prob *= 0.2
     elif days_since_signup < 180:
@@ -517,18 +630,96 @@ for row in cursor.fetchall():
     churn_prob = min(churn_prob, 0.9)
 
     if random.random() < churn_prob:
-        churn_date = fake.date_time_between(start_date=signup_date + timedelta(days=30), end_date=datetime.today()).strftime("%Y-%m-%d %H:%M:%S")
-        cursor.execute("INSERT INTO churn_events VALUES (?, ?, ?, ?)", (
-            churn_id, cust_id, churn_date, random.choice(CHURN_REASONS)
-        ))
-        churn_id += 1
+        min_lifetime_days = 30 if segment == 'SMB' else 60 if segment == 'Mid-Market' else 120
+        if datetime.today() >= signup_date + timedelta(days=min_lifetime_days):
+            churn_candidates += 1
+            churn_date = fake.date_time_between(
+                start_date=signup_date + timedelta(days=min_lifetime_days),
+                end_date=datetime.today()
+            ).strftime("%Y-%m-%d %H:%M:%S")
 
-print("[INFO] Inserted churn events.")
+            cursor.execute("INSERT INTO churn_events VALUES (?, ?, ?, ?)", (
+                churn_id, customer_id, churn_date, random.choice(["Too expensive", "Switched provider", "Lack of features", "Poor support", "Other"])
+            ))
+            churn_inserted += 1
+            churn_id += 1
+
+        if random.random() < 0.1:  # 10% chance to reactivate
+            reactivation_date = datetime.strptime(churn_date, "%Y-%m-%d %H:%M:%S") + timedelta(days=random.randint(30, 120))
+            cursor.execute("""
+                INSERT INTO subscriptions (subscription_id, customer_id, plan_type, subscription_price, start_date, end_date, status, change_type)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                sub_id, customer_id, "Hopify Standard", 299,
+                reactivation_date.strftime("%Y-%m-%d %H:%M:%S"), None, "Active", "Reactivation"
+            ))
+            sub_id += 1
+
+print(f"[INFO] Churn eligible: {churn_candidates}, Churn inserted: {churn_inserted}")
+
 
 # ------------------------------
-# App Installs per Location
+# Simulated Reactivations after Churn (Segment-aware)
 # ------------------------------
-install_id = 1
+
+# Continue sub_id from previous context
+cursor.execute("SELECT MAX(subscription_id) FROM subscriptions")
+existing_sub_id = cursor.fetchone()[0]
+sub_id = existing_sub_id + 1 if existing_sub_id is not None else 1
+
+cursor.execute("SELECT customer_id, churn_date FROM churn_events")
+churned_customers = cursor.fetchall()
+
+reactivation_count = 0
+
+for customer_id, churn_date_str in churned_customers:
+    churn_date = datetime.strptime(churn_date_str, "%Y-%m-%d %H:%M:%S")
+
+    # 10–20% chance of reactivation depending on segment
+    cursor.execute("SELECT customer_segment FROM customers WHERE customer_id = ?", (customer_id,))
+    segment = cursor.fetchone()[0]
+    reactivation_chance = {"SMB": 0.05, "Mid-Market": 0.1, "Enterprise": 0.2}
+
+    if random.random() < reactivation_chance[segment]:
+        reactivation_date = churn_date + timedelta(days=random.randint(30, 180))
+        if reactivation_date < datetime.today():
+            # Assign a reactivation plan — slightly higher pricing than original
+            if segment == 'Enterprise':
+                plan_type = random.choice(['Pro', 'Enterprise'])
+                price = round(random.uniform(350, 900), 2)
+            elif segment == 'Mid-Market':
+                plan_type = random.choice(['Standard', 'Pro'])
+                price = round(random.uniform(120, 350), 2)
+            else:
+                plan_type = random.choice(['Starter', 'Standard'])
+                price = round(random.uniform(40, 120), 2)
+
+            cursor.execute("""
+                INSERT INTO subscriptions (
+                    subscription_id, customer_id, plan_type,
+                    subscription_price, start_date, end_date,
+                    status, change_type
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                sub_id, customer_id, plan_type, price,
+                reactivation_date.strftime("%Y-%m-%d %H:%M:%S"),
+                None, 'active', 'reactivation'
+            ))
+            sub_id += 1
+            reactivation_count += 1
+
+print(f"[INFO] Reactivated {reactivation_count} churned customers.")
+
+
+# ------------------------------
+# App Installs per Location (Defensive Handling)
+# ------------------------------
+
+# Get current max install_id to avoid conflicts
+cursor.execute("SELECT MAX(install_id) FROM app_installs")
+existing_max_install_id = cursor.fetchone()[0]
+install_id = existing_max_install_id + 1 if existing_max_install_id is not None else 1
+
 for location_id in range(1, len(OFFICE_LOCATIONS) + 1):
     for _ in range(random.randint(5, 12)):
         pid = random.randint(1, NUM_PRODUCTS_TOTAL)
@@ -541,9 +732,16 @@ for location_id in range(1, len(OFFICE_LOCATIONS) + 1):
 print("[INFO] Inserted app installs.")
 
 # ------------------------------
-# Discounts and Order Discounts
+# Discounts and Order Discounts (with defensive uniqueness)
 # ------------------------------
-for i in range(1, 51):
+
+# Ensure discount_id continues from the current max
+cursor.execute("SELECT MAX(discount_id) FROM discounts")
+existing_max = cursor.fetchone()[0]
+start_id = existing_max + 1 if existing_max else 1
+
+# Insert 50 new discount codes
+for i in range(start_id, start_id + 50):
     code = f"SALE{i:02d}"
     percent = random.choice([5, 10, 15, 20, 25, 30])
     start = fake.date_time_between(start_date='-1y', end_date='-30d')
@@ -554,32 +752,59 @@ for i in range(1, 51):
         end.strftime("%Y-%m-%d %H:%M:%S")
     ))
 
+# Apply discounts to unique orders, avoiding duplicate (order_id, discount_id) pairs
+used_pairs = set()
 cursor.execute("SELECT order_id FROM orders ORDER BY RANDOM() LIMIT 20000")
 for row in cursor.fetchall():
-    cursor.execute("INSERT INTO order_discounts VALUES (?, ?)", (row[0], random.randint(1, 50)))
+    order_id = row[0]
+    tries = 0
+    while tries < 10:
+        discount_id = random.randint(start_id, start_id + 49)
+        if (order_id, discount_id) not in used_pairs:
+            cursor.execute("INSERT INTO order_discounts VALUES (?, ?)", (order_id, discount_id))
+            used_pairs.add((order_id, discount_id))
+            break
+        tries += 1  # Retry with a different discount
 
 print("[INFO] Inserted discounts and applied to orders.")
 
+# ------------------------------
+# Marketing Spend Table
+# ------------------------------
+
+marketing_spend_data = []
+segment_spend_ranges = {
+    "SMB": (10000, 25000),
+    "Mid-Market": (50000, 80000),
+    "Enterprise": (100000, 150000)
+}
+
+month_cursor = datetime.now() - relativedelta(months=36)
+end_month = datetime.now() - relativedelta(months=1)
+
+while month_cursor <= end_month:
+    month_str = month_cursor.strftime('%Y-%m')
+    for segment in CUSTOMER_SEGMENTS:
+        min_spend, max_spend = segment_spend_ranges[segment]
+        variation = random.uniform(-0.1, 0.1)  # simulate 10% monthly budget fluctuation
+        avg_spend = (min_spend + max_spend) / 2
+        monthly_budget = round(avg_spend * (1 + variation), 2)
+        marketing_spend_data.append((segment, month_str, monthly_budget))
+    month_cursor += relativedelta(months=1)
+
+cursor.executemany("""
+    INSERT INTO marketing_spend (segment, month, monthly_budget)
+    VALUES (?, ?, ?)
+""", marketing_spend_data)
+
+print(f"[INFO] Inserted {len(marketing_spend_data)} rows of marketing spend data with dynamic variation.")
 
 # ------------------------------
-# Marketing Campaigns
+# Web Traffic Data (Safe Refresh)
 # ------------------------------
-campaigns = [
-    ("Summer Splash Sale", "Paid Search", "Lead Gen", "2024-06-01", "2024-08-31", 50000),
-    ("Black Friday Push", "Social Media", "Lead Gen", "2024-11-01", "2024-12-01", 120000),
-    ("Organic Growth", "Organic", "Brand Awareness", "2023-01-01", "2025-01-01", 0)
-]
 
-for i, (name, channel, ctype, start, end, cost) in enumerate(campaigns, 1):
-    cursor.execute("""
-        INSERT INTO marketing_campaigns VALUES (?, ?, ?, ?, ?, ?, ?)
-    """, (i, name, channel, ctype, start, end, cost))
+cursor.execute("DELETE FROM web_traffic")
 
-print("[INFO] Sample marketing campaigns inserted.")
-
-# ------------------------------
-# Web Traffic Data (with AUTOINCREMENT handling)
-# ------------------------------
 channels = ['Paid Search', 'Social Media', 'Organic']
 months = [datetime.now() - relativedelta(months=i) for i in range(0, 24)]
 
@@ -593,37 +818,60 @@ for month in months:
             VALUES (?, ?, ?, ?, ?)
         """, (month.strftime("%Y-%m"), channel, visitors, leads, mqls))
 
-print("[INFO] Sample web traffic data inserted.")
+print("[INFO] Sample web traffic data inserted (table cleared before insert).")
 
 # ------------------------------
-# Benchmarks
+# Replace Benchmarks from CSV
 # ------------------------------
-benchmarks = [
-    ("Revenue KPIs", "All Segments", "MRR Target", 2000000, "Monthly recurring revenue goal"),
-    ("Revenue KPIs", "All Segments", "NRR % Target", 120, "Target Net Revenue Retention percentage"),
-    ("Revenue KPIs", "All Segments", "GRR % Target", 95, "Target Gross Revenue Retention percentage"),
-    ("Customer KPIs", "All Segments", "Monthly Churn % Target", 3.5, "Target monthly churn rate"),
-    ("Customer KPIs", "All Segments", "Monthly New Customers Target", 2000, "Target new customer acquisition volume"),
-    ("Support KPIs", "All Segments", "Avg Resolution Time Target (hrs)", 48, "Target average resolution time for tickets"),
-    ("Support KPIs", "All Segments", "Support to Churn Correlation %", 0.3, "Expected churn from high support volume"),
-    ("Marketing KPIs", "All Segments", "MQL Conversion Rate %", 15, "Expected conversion from MQL to paying customer"),
-    ("Marketing KPIs", "All Segments", "CAC Target", 500, "Customer acquisition cost target (USD)"),
-    ("Revenue KPIs", "Enterprise", "ARPU Target", 1700, "Enterprise ARPU target"),
-    ("Revenue KPIs", "Mid-Market", "ARPU Target", 1600, "Mid-Market ARPU target"),
-    ("Revenue KPIs", "SMB", "ARPU Target", 1500, "SMB ARPU target"),
+benchmarks_csv_path = os.path.join(
+    os.path.dirname(__file__), '..', 'benchmarks', 'hopify-benchmarks-seg-table.csv'
+)
+print(f"[INFO] Benchmarks CSV path set to: {benchmarks_csv_path}")
 
-    # Add Retention % Targets by Segment
-    ("Customer KPIs", "Enterprise", "Retention % Target", 90, "12-month retention target for Enterprise cohorts"),
-    ("Customer KPIs", "Mid-Market", "Retention % Target", 80, "12-month retention target for Mid-Market cohorts"),
-    ("Customer KPIs", "SMB", "Retention % Target", 70, "12-month retention target for SMB cohorts")
-]
+# Delete all existing benchmarks
+cursor.execute("DELETE FROM benchmarks")
 
+# Load and insert new benchmarks
+rows = []
+with open(benchmarks_csv_path, mode='r', encoding='utf-8') as file:
+    reader = csv.DictReader(file, delimiter=',')
+
+    for i, row in enumerate(reader):
+        try:
+            # Skip rows with missing required fields
+            if not row["benchmark_id"] or not row["metric_name"] or not row["target_value"]:
+                print(f"[SKIP] Row {i + 1} missing required fields: {row}")
+                continue
+
+            parsed_row = (
+                row["benchmark_id"].strip(),
+                row["metric_category"].strip(),
+                row["segment"].strip(),
+                row["metric_name"].strip(),
+                float(row["target_value"]),
+                row["description"].strip(),
+                row["target_period"].strip()
+            )
+            rows.append(parsed_row)
+
+        except Exception as e:
+            print(f"[ERROR] Row {i + 1} failed: {row}")
+            print(f"        Error: {e}")
+
+# Insert cleaned rows into benchmarks table
 cursor.executemany("""
-    INSERT INTO benchmarks (metric_category, segment, metric_name, target_value, description) 
-    VALUES (?, ?, ?, ?, ?)
-""", benchmarks)
+    INSERT INTO benchmarks (
+        benchmark_id,
+        metric_category,
+        segment,
+        metric_name,
+        target_value,
+        description,
+        target_period
+    ) VALUES (?, ?, ?, ?, ?, ?, ?)
+""", rows)
 
-print("[INFO] Sample benchmarks (global and segment-specific) inserted.")
+print(f"[INFO] Benchmarks replaced from CSV. Rows inserted: {len(rows)}")
 
 
 # ------------------------------

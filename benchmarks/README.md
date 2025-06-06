@@ -1,60 +1,27 @@
-### 📊 Benchmarks
+# 📊 Benchmarks Folder
 
-This folder contains the `hopify_kpi_benchmarks.csv` file used for managing KPI targets in the Hopify v1 database.
+This folder contains the KPI benchmark targets used by the `hopify_db_v1_gen.py` script during database generation.
 
----
+### 🧩 File Included
 
-## 🔁 Default Method: Hardcoded Benchmarks in Python
+- `hopify-benchmarks-seg-table.csv`  
+  Contains simulated target values for key SaaS KPIs across customer segments (`SMB`, `Mid-Market`, `Enterprise`).
 
-The database generator script (`hopify_db_v1_gen.py`) uses **a hardcoded list of benchmark tuples** to populate the `hopify_kpi_benchmarks` table during initial database creation.
+### 📌 Key Metrics Tracked
 
-This approach is intentional:
+Benchmarks include:
+- Monthly Churn Rate %
+- Gross Revenue Retention (GRR)
+- Net Revenue Retention (NRR)
+- CAC Payback Period
+- Avg Resolution Time (Support)
+- ARPU Targets
 
-- ✅ Ensures every generated database includes valid benchmark targets
-- ✅ Allows new users to **practice editing benchmark values manually** using:
-  - SQL CLI (`UPDATE benchmarks SET ...`)
-  - SQLite tools like DBeaver or DB Browser
-  - Power BI or Notion syncs
+### ⚙️ How It's Used
 
----
+The Python script directly loads this CSV to:
+- Assign realistic performance goals per segment
+- Enable KPI comparisons in downstream analysis
+- Drive segment-aware logic in churn, pricing, and support modeling
 
-# ----------------------------------------
-# 🔁 ALTERNATIVE: Load Benchmarks from CSV
-# ----------------------------------------
-import csv
-import os
-
-def insert_benchmarks_from_csv(conn, csv_path='benchmarks/hopify_kpi_benchmarks.csv'):
-    cursor = conn.cursor()
-
-    # Ensure table exists
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS benchmarks (
-            metric_category TEXT,
-            segment TEXT,
-            metric_name TEXT,
-            target_value REAL,
-            description TEXT
-        );
-    """)
-
-    try:
-        with open(csv_path, newline='') as csvfile:
-            reader = csv.DictReader(csvfile)
-            for row in reader:
-                cursor.execute("""
-                    INSERT INTO benchmarks (metric_category, segment, metric_name, target_value, description)
-                    VALUES (?, ?, ?, ?, ?)
-                """, (
-                    row['metric_category'],
-                    row['segment'],
-                    row['metric_name'],
-                    float(row['target_value']),
-                    row['description']
-                ))
-        conn.commit()
-        print(f"[INFO] Benchmarks loaded from: {csv_path}")
-    except FileNotFoundError:
-        print(f"[WARNING] CSV file not found: {csv_path} — falling back to hardcoded benchmarks")
-
----
+> 📎 Do not rename or restructure the CSV without updating the script accordingly.

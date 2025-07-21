@@ -45,3 +45,4 @@ build/
 dist/
 *.egg-info/
 >>>>>>> cc973668eb97a40c96672e13c306892a31010cb1
+.DS_Store

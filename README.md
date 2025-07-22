@@ -1,81 +1,56 @@
-# 💻 Hopify SaaS DB Generator  
+# 🧪 Hopify SaaS DB Generator
 
-![SaaS](https://img.shields.io/badge/SaaS-Simulation-blueviolet)
-![Python](https://img.shields.io/badge/Python-3.x-blue?logo=python)
-![SQL](https://img.shields.io/badge/SQL-SQLite-lightgrey?logo=sqlite)
-![Data Generation](https://img.shields.io/badge/Data-Synthetic-green)
-![Customer Lifecycle](https://img.shields.io/badge/Customer-Lifecycle-orange)
+This project simulates a realistic B2B SaaS company dataset inspired by platforms like Shopify. It generates synthetic customer, revenue, churn, and support data to support KPI analysis across customer lifecycle stages.
 
-**Version:** `v1.0`  
-📅 Released: June 2025
-
-A Python-based generator that creates a realistic, benchmark-aware **B2B SaaS customer lifecycle database** for Hopify. It simulates acquisition, subscriptions, churn, and segment behavior across `SMB`, `Mid-Market`, and `Enterprise` tiers, producing a normalized SQLite database for downstream analysis.
+The database is designed to reflect real-world SaaS performance metrics (e.g., CAC, LTV, GRR, NRR, Churn Rate), supporting financial analysis, customer segmentation, and lifecycle modeling.
 
 ---
 
-## 🧠 Overview
+## 📂 Project Structure
 
-This repository generates a clean, multi-year, segment-aware **SQLite database** (`hopify_saas_v1.db`) that serves as the foundation for SaaS KPI modeling, churn analysis, and revenue forecasting. The dataset is fully synthetic and reflects real-world B2B customer behavior.
-
-It is designed for use by **data analysts, business students, and product teams** looking to practice SQL, Python, cohort modeling, and SaaS metrics in a realistic simulation environment. Built entirely in Python with benchmark targeting, it enables faster prototyping and hands-on exploration of customer lifecycle analytics.
-
----
-
-## 📁 Repository Structure
-
-```text
-/benchmarks/   → KPI benchmark values (CSV) used directly in database generation  
-/data/         → Zipped SQLite database output: hopify_saas_v1.db  
-/docs/         → Dataset overview and generation script section-by-section guide  
-/visuals/      → ERD diagrams (DBeaver PNG + PDF)  
-hopify_db_v1_gen.py → Main script (Python v15 generator)  
-README.md      → Root-level project overview  
-requirements.txt → Environment setup file
-```
+| Folder | Description |
+|--------|-------------|
+| [`01_project_artifacts`](./01_project_artifacts) | Benchmarks and ERD diagrams used to guide database structure and performance assumptions. |
+| └── [`01_benchmarks`](./01_project_artifacts/benchmarks) | Industry metrics used for segmentation and KPI calibration. |
+| └── [`02_hopify_erd_source_files`](./01_project_artifacts/erd) | ERD (.png and DBeaver .sql) for data schema visualization. |
+| [`02_documentation`](./02_documentation) | Dataset overview and annotated Python section notes. |
+| [`03_data`](./03_data) | Final generated SQLite database (`.zip`) for use in Tableau, Power BI, or SQL analysis. |
+| [`04_code`](./04_code) | Python script to generate the full multi-year Hopify dataset. |
+| Files | `requirements.txt`, `.gitignore`, `LICENSE` |
 
 ---
 
-## 📊 Project Architecture Diagrams
+## 📘 Key Documentation
 
-The following visuals illustrate the structural logic and table relationships:
-
-- 🧩 [ERD (DBeaver PNG)](visuals/hopify_v1_erd_dbeaver.png) — Visual layout of all tables and connections  
-- 📄 [ERD (DBeaver PDF)](visuals/hopify_v1_erd_dbeaver.pdf) — Print-ready version for documentation or presentations  
-
-🔗 Example output: [`hopify_saas_v1.db.zip`](data/hopify_saas_v1.db.zip)
+- 📄 [Dataset Overview](./02_documentation/hopify_db_dataset_overview.md)  
+- 🧠 [Code Block Annotations](./02_documentation/hopify_db_gen_section_notes.md)  
+- 🧮 [Benchmarks Reference Table](./01_project_artifacts/benchmarks/hopify-benchmarks-seg-table.csv)  
+- 🗺️ [ERD Diagram](./01_project_artifacts/erd/hopify_v1_erd_dbeaver.png)
 
 ---
 
-## 🔧 Features & Simulation Logic
+## 🔧 How to Use
 
-| ✅ Module                    | Description                                                                |
-|-----------------------------|-----------------------------------------------------------------------------|
-| Segment-aware simulation    | Customers behave differently by segment: SMB, Mid-Market, Enterprise        |
-| Multi-year cohort modeling  | Customer acquisition trends evolve month-to-month over a 3-year period      |
-| Churn & retention decay     | Churn risk decreases with tenure and varies by support history              |
-| Benchmarks table            | Reads target KPI benchmarks from CSV during generation                      |
-| ERD + visual documentation  | DBeaver-based schema diagrams for storytelling and analysis                 |
+1. Clone this repo and install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
----
+2. Run the generator:
+   ```bash
+   python 04_code/hopify_db_v1_gen.py
+   ```
 
-## 📄 Documentation
-
-This project includes full documentation for both the database structure and the script logic behind it:
-
-- 🗂️ [`Dataset Overview`](docs/hopify_db_dataset_overview.md)  
-  Explains the schema design, table relationships, and key fields in the SQLite file.
-
-- 🧑‍💻 [`Developer Notes: hopify_db_gen Section-by-Section Guide`](docs/hopify_db_gen_section_notes.md)  
-  Provides commentary on `hopify_db_v1_gen.py`, including logic, structure, and business reasoning.
+3. The generated SQLite database will be available under `03_data/`.
 
 ---
 
-## 🔗 Related Projects
+## 🚀 Future Plans
 
-Looking for the analysis side of this project?
-
-👉 Check out the companion repository: **[Hopify SaaS KPI Analysis](https://github.com/j-herman99/hopify-saas-kpi-analysis)**  
-
-Includes SQL queries, cohort analysis, KPI benchmarking, retention heatmaps, and Python-powered insights built on the database from this repo.
+- Add support for Postgres and BigQuery export
+- Generate dashboard-ready views with KPI aggregations
+- Publish on Kaggle with SQL challenge prompts
 
 ---
+
+© 2025 Jade Herman | Built with 💻, 🧠, and too much ☕

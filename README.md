@@ -1,5 +1,14 @@
 # 🧪 Hopify SaaS DB Generator
 
+![Built With: Python](https://img.shields.io/badge/Built%20With-Python-blue)
+![Status: Stable](https://img.shields.io/badge/Status-Stable-brightgreen)
+![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue)
+![Use Case: SaaS KPI Analysis](https://img.shields.io/badge/Use%20Case-SaaS%20KPI%20Analysis-orange)
+![Data Type: Synthetic B2B SaaS](https://img.shields.io/badge/Data%20Type-Synthetic%20B2B%20SaaS-lightgrey)
+![Benchmarked: Industry Metrics](https://img.shields.io/badge/Benchmarked-Industry%20Metrics-blueviolet)
+![Schema: ERD Included](https://img.shields.io/badge/Schema-ERD%20Included-yellowgreen)
+
+
 This project simulates a realistic B2B SaaS company dataset inspired by platforms like Shopify. It generates synthetic customer, revenue, churn, and support data to support KPI analysis across customer lifecycle stages.
 
 The database is designed to reflect real-world SaaS performance metrics (e.g., CAC, LTV, GRR, NRR, Churn Rate), supporting financial analysis, customer segmentation, and lifecycle modeling.

@@ -9,7 +9,7 @@
 ![Schema: ERD Included](https://img.shields.io/badge/Schema-ERD%20Included-yellowgreen)
 
 
-This project simulates a realistic B2B SaaS company dataset inspired by platforms like Shopify. It generates synthetic customer, revenue, churn, and support data to support KPI analysis across customer lifecycle stages.
+_This project simulates a realistic B2B SaaS company dataset inspired by platforms like Shopify. It generates synthetic customer, revenue, churn, and support data to support KPI analysis across customer lifecycle stages._
 
 The database is designed to reflect real-world SaaS performance metrics (e.g., CAC, LTV, GRR, NRR, Churn Rate), supporting financial analysis, customer segmentation, and lifecycle modeling.
 

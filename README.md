@@ -1,12 +1,12 @@
 # 🧪 Hopify SaaS DB Generator
 
-![Built With: Python](https://img.shields.io/badge/Built%20With-Python-blue)
-![Status: Stable](https://img.shields.io/badge/Status-Stable-brightgreen)
-![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue)
-![Use Case: SaaS KPI Analysis](https://img.shields.io/badge/Use%20Case-SaaS%20KPI%20Analysis-orange)
-![Data Type: Synthetic B2B SaaS](https://img.shields.io/badge/Data%20Type-Synthetic%20B2B%20SaaS-lightgrey)
-![Benchmarked: Industry Metrics](https://img.shields.io/badge/Benchmarked-Industry%20Metrics-blueviolet)
-![Schema: ERD Included](https://img.shields.io/badge/Schema-ERD%20Included-yellowgreen)
+![Built With: Python](https://img.shields.io/badge/Built%20With-Python-06b6d4?style=flat&labelColor=333&logo=python&logoColor=white)
+![Status: Stable](https://img.shields.io/badge/Status-Stable-facc15?style=flat&labelColor=333)
+![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-f59e0b?style=flat&labelColor=333)
+![Use Case: SaaS KPI Analysis](https://img.shields.io/badge/Use%20Case-SaaS%20KPI%20Analysis-14b8a6?style=flat&labelColor=333)
+![Data Type: Synthetic B2B SaaS](https://img.shields.io/badge/Data%20Type-Synthetic%20B2B%20SaaS-7dd3fc?style=flat&labelColor=333)
+![Benchmarked: Industry Metrics](https://img.shields.io/badge/Benchmarked-Industry%20Metrics-6366f1?style=flat&labelColor=333)
+![Schema: ERD Included](https://img.shields.io/badge/Schema-ERD%20Included-9333ea?style=flat&labelColor=333)
 
 
 _This project simulates a realistic B2B SaaS company dataset inspired by platforms like Shopify. It generates synthetic customer, revenue, churn, and support data to support KPI analysis across customer lifecycle stages._

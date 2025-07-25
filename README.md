@@ -20,12 +20,30 @@ The database is designed to reflect real-world SaaS performance metrics (e.g., C
 | Folder | Description |
 |--------|-------------|
 | [`01_project_artifacts`](./01_project_artifacts) | Benchmarks and ERD diagrams used to guide database structure and performance assumptions. |
-| └── [`01_benchmarks`](./01_project_artifacts/benchmarks) | Industry metrics used for segmentation and KPI calibration. |
-| └── [`02_hopify_erd_source_files`](./01_project_artifacts/erd) | ERD (.png and DBeaver .sql) for data schema visualization. |
+| └── [`01_benchmarks`](./01_project_artifacts/01_benchmarks) | Industry metrics used for segmentation and KPI calibration. |
+| └── [`02_hopify_erd_source_files`](./01_project_artifacts/02_erd_source_files) | ERD (.png and DBeaver .sql/.pdf) for data schema visualization. |
 | [`02_documentation`](./02_documentation) | Dataset overview and annotated Python section notes. |
 | [`03_data`](./03_data) | Final generated SQLite database (`.zip`) for use in Tableau, Power BI, or SQL analysis. |
 | [`04_code`](./04_code) | Python script to generate the full multi-year Hopify dataset. |
 | Files | `requirements.txt`, `.gitignore`, `LICENSE` |
+
+---
+
+## 📘 Key Documentation
+
+- 📄 [Dataset Overview](./02_documentation/hopify_db_dataset_overview.md)  
+- 🧠 [Code Block Annotations](./02_documentation/hopify_db_gen_section_notes.md)  
+- 🧮 [Benchmarks Reference Table](./01_project_artifacts/01_benchmarks/hopify_benchmarks_seg_table.csv)  
+- 🗺️ [ERD Diagram](./01_project_artifacts/02_erd_source_files/hopify_v1_erd_dbeaver.png)
+
+---
+
+## 🔧 How to Use
+
+1. Clone this repo and install dependencies:
+   ```bash
+   pip install -r requirements.txt
+
 
 ---
 
@@ -61,5 +79,3 @@ The database is designed to reflect real-world SaaS performance metrics (e.g., C
 - Publish on Kaggle with SQL challenge prompts
 
 ---
-
-© 2025 Jade Herman | Built with 💻, 🧠, and too much ☕
